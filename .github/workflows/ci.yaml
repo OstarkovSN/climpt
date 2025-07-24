@@ -1,0 +1,36 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ master, develop ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [windows-latest, ubuntu-latest, macos-latest]
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Install Pixi
+      uses: prefix-dev/setup-pixi@v0.4.0
+      with:
+        pixi-version: v0.17.0
+    
+    - name: Install dependencies
+      run: pixi install
+    
+    - name: Build executable
+      run: pixi run build
+    
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: climpt-${{ matrix.os }}
+        path: |
+          dist/
+          *.exe
