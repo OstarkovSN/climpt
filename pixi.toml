@@ -13,10 +13,10 @@ debug = "python main.py -vv"
 
 [dependencies]
 python = ">=3.10"
-wxpython = "*"
 pyperclip = "*"
 pyinstaller = "*"
 click = ">=8.2.1,<9"
 
 [pypi-dependencies]
 keyboard = "*"
+pyqt6 = "*"

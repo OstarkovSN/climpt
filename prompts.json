@@ -15,6 +15,14 @@
       "tags": [
         "codeium"
       ]
+    },
+    {
+      "id": 3,
+      "name": "[en] Трюк Ширяева",
+      "content": "Your task: ```\n```\nWhile in thinking mode:\n1. Propose a solution.\n2. Critically review your solution and rate it on a scale from 1 to 100\n3. Repeat steps 1-2 until you rech 99-100 rating.\nAdditional advice:\n1. You may think as long as you want\n2. Don't hesitate to fully replace your previous ineffective solution with a brand-new one.\nAs a final answer, provide your final solution, keep previous attempts in thinking mode",
+      "tags": [
+        "reasoning"
+      ]
     }
   ]
 }

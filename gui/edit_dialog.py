@@ -1,71 +1,77 @@
-import wx
+from PyQt6.QtWidgets import (
+    QDialog, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QTextEdit, QPushButton, QWidget
+)
 import logging
 
 logger = logging.getLogger(__name__)
 
 
-class EditPromptDialog(wx.Dialog):
+class EditPromptDialog(QDialog):
     def __init__(self, parent, prompt=None):
         title = "Edit Prompt" if prompt else "Add New Prompt"
-        super().__init__(parent, title=title, size=(500, 400))
+        super().__init__(parent)
+        self.setWindowTitle(title)
+        self.resize(500, 400)
 
         self.prompt = prompt or {"id": None, "name": "", "content": "", "tags": []}
         self.setup_ui()
 
     def setup_ui(self):
-        panel = wx.Panel(self)
-        sizer = wx.BoxSizer(wx.VERTICAL)
+        layout = QVBoxLayout()
+        layout.setContentsMargins(10, 10, 10, 10)
+        layout.setSpacing(10)
 
         # Name
-        name_label = wx.StaticText(panel, label="Name:")
-        self.name_ctrl = wx.TextCtrl(panel, value=self.prompt["name"])
-        sizer.Add(name_label, 0, wx.ALL, 5)
-        sizer.Add(self.name_ctrl, 0, wx.ALL | wx.EXPAND, 5)
+        name_label = QLabel("Name:")
+        self.name_ctrl = QLineEdit(self.prompt["name"])
+        layout.addWidget(name_label)
+        layout.addWidget(self.name_ctrl)
 
         # Content
-        content_label = wx.StaticText(panel, label="Content:")
-        self.content_ctrl = wx.TextCtrl(
-            panel, value=self.prompt["content"], style=wx.TE_MULTILINE | wx.HSCROLL
-        )
-        self.content_ctrl.SetMinSize((400, 150))
-        sizer.Add(content_label, 0, wx.ALL, 5)
-        sizer.Add(self.content_ctrl, 1, wx.ALL | wx.EXPAND, 5)
+        content_label = QLabel("Content:")
+        self.content_ctrl = QTextEdit()
+        self.content_ctrl.setPlainText(self.prompt["content"])
+        self.content_ctrl.setMinimumHeight(150)
+        layout.addWidget(content_label)
+        layout.addWidget(self.content_ctrl)
 
         # Tags
-        tags_label = wx.StaticText(panel, label="Tags (comma separated):")
+        tags_label = QLabel("Tags (comma separated):")
         tags_str = ", ".join(self.prompt["tags"])
-        self.tags_ctrl = wx.TextCtrl(panel, value=tags_str)
-        sizer.Add(tags_label, 0, wx.ALL, 5)
-        sizer.Add(self.tags_ctrl, 0, wx.ALL | wx.EXPAND, 5)
+        self.tags_ctrl = QLineEdit(tags_str)
+        layout.addWidget(tags_label)
+        layout.addWidget(self.tags_ctrl)
 
         # Buttons
-        button_sizer = wx.BoxSizer(wx.HORIZONTAL)
-        ok_btn = wx.Button(panel, wx.ID_OK, "OK")
-        cancel_btn = wx.Button(panel, wx.ID_CANCEL, "Cancel")
+        button_layout = QHBoxLayout()
+        button_layout.addStretch()
+        
+        ok_btn = QPushButton("OK")
+        cancel_btn = QPushButton("Cancel")
+        
+        ok_btn.clicked.connect(self.on_ok)
+        cancel_btn.clicked.connect(self.on_cancel)
+        
+        button_layout.addWidget(ok_btn)
+        button_layout.addWidget(cancel_btn)
+        
+        layout.addLayout(button_layout)
+        
+        self.setLayout(layout)
 
-        ok_btn.Bind(wx.EVT_BUTTON, self.on_ok)
-        cancel_btn.Bind(wx.EVT_BUTTON, self.on_cancel)
+    def on_ok(self):
+        self.accept()
 
-        button_sizer.Add(ok_btn, 0, wx.ALL, 5)
-        button_sizer.Add(cancel_btn, 0, wx.ALL, 5)
-
-        sizer.Add(button_sizer, 0, wx.ALIGN_CENTER)
-
-        panel.SetSizer(sizer)
-
-    def on_ok(self, event):
-        self.EndModal(wx.ID_OK)
-
-    def on_cancel(self, event):
-        self.EndModal(wx.ID_CANCEL)
+    def on_cancel(self):
+        self.reject()
 
     def get_data(self):
-        tags_str = self.tags_ctrl.GetValue()
+        tags_str = self.tags_ctrl.text()
         tags = [tag.strip() for tag in tags_str.split(",") if tag.strip()]
 
         return {
             "id": self.prompt["id"],
-            "name": self.name_ctrl.GetValue(),
-            "content": self.content_ctrl.GetValue(),
+            "name": self.name_ctrl.text(),
+            "content": self.content_ctrl.toPlainText(),
             "tags": tags,
         }

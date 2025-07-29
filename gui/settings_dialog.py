@@ -1,107 +1,106 @@
-import wx
+from PyQt6.QtWidgets import (
+    QDialog, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QPushButton, 
+    QComboBox, QWidget, QFrame
+)
+from PyQt6.QtGui import QFont
 import logging
 
 logger = logging.getLogger(__name__)
 
 
-class SettingsDialog(wx.Dialog):
+class SettingsDialog(QDialog):
     def __init__(self, parent, config_manager):
-        super().__init__(parent, title="Settings", size=(400, 300))
+        super().__init__(parent)
+        self.setWindowTitle("Settings")
+        self.resize(400, 300)
         self.config_manager = config_manager
         self.setup_ui()
 
     def setup_ui(self):
-        panel = wx.Panel(self)
-        sizer = wx.BoxSizer(wx.VERTICAL)
+        layout = QVBoxLayout()
+        layout.setContentsMargins(10, 10, 10, 10)
+        layout.setSpacing(10)
 
         # Hotkeys section
-        hotkeys_label = wx.StaticText(panel, label="Hotkeys")
-        hotkeys_font = hotkeys_label.GetFont()
-        hotkeys_font.SetWeight(wx.FONTWEIGHT_BOLD)
-        hotkeys_label.SetFont(hotkeys_font)
-        sizer.Add(hotkeys_label, 0, wx.ALL, 5)
+        hotkeys_label = QLabel("Hotkeys")
+        hotkeys_font = QFont()
+        hotkeys_font.setBold(True)
+        hotkeys_label.setFont(hotkeys_font)
+        layout.addWidget(hotkeys_label)
 
         # Overlay hotkey
-        overlay_sizer = wx.BoxSizer(wx.HORIZONTAL)
-        overlay_sizer.Add(
-            wx.StaticText(panel, label="Toggle Overlay:"),
-            0,
-            wx.ALL | wx.ALIGN_CENTER_VERTICAL,
-            5,
+        overlay_layout = QHBoxLayout()
+        overlay_layout.addWidget(QLabel("Toggle Overlay:"), 0)
+        self.overlay_hotkey = QLineEdit(
+            self.config_manager.get("hotkeys", "overlay", fallback="alt+p")
         )
-        self.overlay_hotkey = wx.TextCtrl(
-            panel, value=self.config_manager.get("hotkeys", "overlay", fallback="alt+p")
-        )
-        overlay_sizer.Add(self.overlay_hotkey, 1, wx.ALL, 5)
-        sizer.Add(overlay_sizer, 0, wx.EXPAND)
+        overlay_layout.addWidget(self.overlay_hotkey, 1)
+        layout.addLayout(overlay_layout)
 
         # Tags hotkey
-        tags_sizer = wx.BoxSizer(wx.HORIZONTAL)
-        tags_sizer.Add(
-            wx.StaticText(panel, label="Toggle Tags:"),
-            0,
-            wx.ALL | wx.ALIGN_CENTER_VERTICAL,
-            5,
+        tags_layout = QHBoxLayout()
+        tags_layout.addWidget(QLabel("Toggle Tags:"), 0)
+        self.tags_hotkey = QLineEdit(
+            self.config_manager.get("hotkeys", "tags", fallback="alt+t")
         )
-        self.tags_hotkey = wx.TextCtrl(
-            panel, value=self.config_manager.get("hotkeys", "tags", fallback="alt+t")
-        )
-        tags_sizer.Add(self.tags_hotkey, 1, wx.ALL, 5)
-        sizer.Add(tags_sizer, 0, wx.EXPAND)
+        tags_layout.addWidget(self.tags_hotkey, 1)
+        layout.addLayout(tags_layout)
+
+        # Add some spacing
+        layout.addSpacing(10)
 
         # Position section
-        position_label = wx.StaticText(panel, label="Overlay Position")
-        position_font = position_label.GetFont()
-        position_font.SetWeight(wx.FONTWEIGHT_BOLD)
-        position_label.SetFont(position_font)
-        sizer.Add(position_label, 0, wx.ALL, 5)
+        position_label = QLabel("Overlay Position")
+        position_font = QFont()
+        position_font.setBold(True)
+        position_label.setFont(position_font)
+        layout.addWidget(position_label)
 
         # Corner selection
-        corner_sizer = wx.BoxSizer(wx.HORIZONTAL)
-        corner_sizer.Add(
-            wx.StaticText(panel, label="Corner:"),
-            0,
-            wx.ALL | wx.ALIGN_CENTER_VERTICAL,
-            5,
-        )
-        self.corner_choice = wx.Choice(
-            panel,
-            choices=["Top Left", "Top Right", "Bottom Left", "Bottom Right", "Leave"],
-        )
+        corner_layout = QHBoxLayout()
+        corner_layout.addWidget(QLabel("Corner:"), 0)
+        self.corner_choice = QComboBox()
+        self.corner_choice.addItems(["Top Left", "Top Right", "Bottom Left", "Bottom Right", "Leave"])
         current_corner = self.config_manager.get("overlay", "corner", fallback="Leave")
-        if current_corner in ["Top Left", "Top Right", "Bottom Left", "Bottom Right"]:
-            self.corner_choice.SetStringSelection(current_corner)
+        index = self.corner_choice.findText(current_corner)
+        if index >= 0:
+            self.corner_choice.setCurrentIndex(index)
         else:
-            self.corner_choice.SetStringSelection("Leave")
-        corner_sizer.Add(self.corner_choice, 1, wx.ALL, 5)
-        sizer.Add(corner_sizer, 0, wx.EXPAND)
+            self.corner_choice.setCurrentIndex(self.corner_choice.findText("Leave"))
+        corner_layout.addWidget(self.corner_choice, 1)
+        layout.addLayout(corner_layout)
+
+        # Add some spacing
+        layout.addSpacing(20)
 
         # Buttons
-        button_sizer = wx.BoxSizer(wx.HORIZONTAL)
-        ok_btn = wx.Button(panel, wx.ID_OK, "OK")
-        cancel_btn = wx.Button(panel, wx.ID_CANCEL, "Cancel")
+        button_layout = QHBoxLayout()
+        button_layout.addStretch()
+        
+        ok_btn = QPushButton("OK")
+        cancel_btn = QPushButton("Cancel")
+        
+        ok_btn.clicked.connect(self.on_ok)
+        cancel_btn.clicked.connect(self.on_cancel)
+        
+        button_layout.addWidget(ok_btn)
+        button_layout.addWidget(cancel_btn)
+        
+        layout.addLayout(button_layout)
+        
+        self.setLayout(layout)
 
-        ok_btn.Bind(wx.EVT_BUTTON, self.on_ok)
-        cancel_btn.Bind(wx.EVT_BUTTON, self.on_cancel)
+    def on_ok(self):
+        self.accept()
 
-        button_sizer.Add(ok_btn, 0, wx.ALL, 5)
-        button_sizer.Add(cancel_btn, 0, wx.ALL, 5)
-
-        sizer.Add(button_sizer, 0, wx.ALIGN_CENTER)
-
-        panel.SetSizer(sizer)
-
-    def on_ok(self, event):
-        self.EndModal(wx.ID_OK)
-
-    def on_cancel(self, event):
-        self.EndModal(wx.ID_CANCEL)
+    def on_cancel(self):
+        self.reject()
 
     def get_settings(self):
         return {
             "hotkeys": {
-                "overlay": self.overlay_hotkey.GetValue(),
-                "tags": self.tags_hotkey.GetValue(),
+                "overlay": self.overlay_hotkey.text(),
+                "tags": self.tags_hotkey.text(),
             },
-            "overlay": {"corner": self.corner_choice.GetStringSelection()},
+            "overlay": {"corner": self.corner_choice.currentText()},
         }
