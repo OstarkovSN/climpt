@@ -16,5 +16,5 @@ def insert_prompt(content):
         pyperclip.copy(content)
         return True
     except Exception as e:
-        print(f"Error copying to clipboard: {e}")
+        logger.error(f"Error copying to clipboard: {e}")
         return False

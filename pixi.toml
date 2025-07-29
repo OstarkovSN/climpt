@@ -9,12 +9,14 @@ platforms = ["win-64", "linux-64", "osx-64", "osx-arm64"]
 [tasks]
 start = "python main.py"
 build = "pyinstaller --onefile --windowed main.py"
+debug = "python main.py -vv"
 
 [dependencies]
 python = ">=3.10"
 wxpython = "*"
 pyperclip = "*"
 pyinstaller = "*"
+click = ">=8.2.1,<9"
 
 [pypi-dependencies]
 keyboard = "*"

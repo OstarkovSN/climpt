@@ -23,7 +23,7 @@ def load_prompts():
             data = json.load(f)
             return data.get("prompts", [])
     except Exception as e:
-        print(f"Error loading prompts: {e}")
+        logger.error(f"Error loading prompts: {e}")
         return []
 
 def save_prompts(prompts):
@@ -32,5 +32,5 @@ def save_prompts(prompts):
             json.dump({"prompts": prompts}, f, indent=2, ensure_ascii=False)
         return True
     except Exception as e:
-        print(f"Error saving prompts: {e}")
+        logger.error(f"Error saving prompts: {e}")
         return False
