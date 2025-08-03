@@ -1,0 +1,18 @@
+[tool.pixi.workspace]
+authors = ["Ostarkov S.N. ostarkovstepan@gmail.com"]
+channels = ["https://repo.anaconda.com/pkgs/main", "https://repo.anaconda.com/pkgs/r", "conda-forge",]
+platforms = ["win-64", "linux-64", "osx-64"]
+
+[tool.pixi.tasks]
+start = "python main.py"
+build = "pyinstaller --onefile --windowed main.py"
+debug = "python main.py -vv"
+
+[tool.pixi.dependencies]
+python = "3.12.*"
+
+[project]
+name = "climpt"
+version = "0.1.0"
+description = "Climpt - Clipboard Prompt Manager: Легковесное приложение для хранения и вставки текстовых промптов"
+dependencies = [ "pyperclip>=1.9.0,<2", "pyinstaller>=6.14.2,<7", "pyyaml>=6.0.2,<7", "click>=8.2.1,<9", "pyside6>=6.9.1,<7"]

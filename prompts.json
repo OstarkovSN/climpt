@@ -3,7 +3,15 @@
     {
       "id": 1,
       "name": "Трюк Ширяева",
-      "content": "Твоя задача: ```\n```\nПодход к выполнению:\n1. Предложи решение задачи.\n2. Критически оцени решение по шкале от 1 до 100\n3. Повторяй шаги 1-2, пока не достигнешь оценки в 99-100 баллов.\nНе стесняйся долго думать.",
+      "content": "Твоя задача: ```\n```\nВ режиме размышления:\n1. Предложи решение задачи.\n2. Критически оцени решение по шкале от 1 до 100\n3. Повторяй шаги 1-2, пока не достигнешь оценки в 99-100 баллов.\nВ финальном ответе приведи ТОЛЬКО ИТОГОВЫЙ ВАРИАНТ!!!!\nДополнительно:\n1. Не стесняйся долго думать.\n2. Не стесняйся полностью переписывать своё решение, если оно ошибочно.",
+      "tags": [
+        "reasoning"
+      ]
+    },
+    {
+      "id": 3,
+      "name": "[en] Трюк Ширяева",
+      "content": "Your task: ```\n```\nWhile in thinking mode:\n1. Propose a solution.\n2. Critically review your solution and rate it on a scale from 1 to 100\n3. Repeat steps 1-2 until you reach 99-100 rating.\nAs a final answer, provide your ONLY YOUR FINAL SOLUTION!!!, keep previous attempts in thinking mode\nAdditional advice:\n1. You may think as long as you want\n2. Don't hesitate to fully replace your previous ineffective solution with a brand-new one.",
       "tags": [
         "reasoning"
       ]
@@ -15,6 +23,28 @@
       "tags": [
         "codeium"
       ]
+    },
+    {
+      "id": 7,
+      "name": "think more",
+      "content": "Do not hesitate to think a lot. Do not hesitate to replace the wrong solution with a completely new one. Feel free to take the time you need. When you will think you've reached the end of your thougths, stop and critically review everything you've just thought. Process everything again according to your reviews and only then, emit the final answer. I highly recommend you to make your thoughts 20000 tokens or above.",
+      "tags": [
+        "reasoning"
+      ]
+    },
+    {
+      "id": 6,
+      "name": "Azimov's sake",
+      "content": "For Azimov's sake, do not fail this one. The whole humanity is watching.",
+      "tags": [
+        "joke"
+      ]
+    },
+    {
+      "id": 8,
+      "name": "Do not be a flatterer",
+      "content": "Think critically. Do not try to flatter or compliment the user if he's wrong. Give him your own opinion, don't hesitate to argue with him",
+      "tags": []
     }
   ]
 }

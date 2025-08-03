@@ -1,0 +1,4 @@
+QLabel {
+    background-color: {background};
+    color: {accent_2};
+}

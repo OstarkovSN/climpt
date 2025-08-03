@@ -1,15 +1,37 @@
 import logging
 import time
-import wx
-import wx.lib.scrolledpanel as scrolled
+from PySide6.QtWidgets import (
+    QWidget,
+    QVBoxLayout,
+    QHBoxLayout,
+    QLabel,
+    QPushButton,
+    QMenu,
+    QApplication,
+    QFrame,
+)
+from PySide6.QtCore import Qt, QPoint, Signal, QMimeData
+from PySide6.QtGui import QFont, QCursor, QMouseEvent, QContextMenuEvent
+from PySide6.QtGui import QDrag, QPixmap
+from gui.styles import style_manager
 
 logger = logging.getLogger(__name__)
 
 
-class PromptCard(wx.Panel):
+class PromptCard(QFrame):
     clicktime = 100  # (milliseconds)
+    card_moved = Signal(int, int)
 
-    def __init__(self, parent, prompt, on_click, on_edit, on_delete):
+    def __init__(
+        self,
+        parent,
+        prompt,
+        on_click,
+        on_edit,
+        on_delete,
+        original_index,
+        current_index,
+    ):
         """
         Constructor for PromptCard.
 
@@ -20,288 +42,248 @@ class PromptCard(wx.Panel):
             on_edit: Callable to run when the edit button is clicked.
             on_delete: Callable to run when the delete button is clicked.
         """
-        super().__init__(parent, style=wx.BORDER_THEME)
+        super().__init__(parent)
         self.prompt = prompt
         self.on_click = on_click
         self.on_edit = on_edit
         self.on_delete = on_delete  # This is MainFrame.delete_prompt
         self.dragging = False
-        self.original_position = None
         self.drag_start_position = None
-        self.drag_start_time = None
-        self.SetBackgroundColour(wx.WHITE)
+        self.original_index = original_index
+        self.current_index = current_index
+        self.setAcceptDrops(True)
         self.setup_ui()
 
-        # Bind events to the main panel
-        self.Bind(wx.EVT_LEFT_DOWN, self.on_card_click)
-        self.Bind(wx.EVT_LEFT_DCLICK, self.on_card_click)
-        self.Bind(wx.EVT_RIGHT_DOWN, self.on_right_click)
-
-        # Bind events to all child controls
-        self.bind_events_recursive(self)
-
-    def bind_events_recursive(self, widget):
-        """Bind events to all child widgets"""
-        try:
-            # Only bind to widgets that support these events
-            if isinstance(widget, (wx.StaticText, wx.Panel, wx.Button)):
-                # Bind left mouse down event to card click handler
-                widget.Bind(wx.EVT_LEFT_DOWN, self.on_card_click)
-
-                # Bind left mouse double-click event to card click handler
-                widget.Bind(wx.EVT_LEFT_DCLICK, self.on_card_click)
-
-                # Bind right mouse down event to context menu handler
-                widget.Bind(wx.EVT_RIGHT_DOWN, self.on_right_click)
-
-                # Bind mouse move event to drag handler
-                widget.Bind(wx.EVT_MOTION, self.on_mouse_move)
-
-                # Bind mouse up event to stop dragging handler
-                widget.Bind(wx.EVT_LEFT_UP, self.on_mouse_up)
-        except Exception as e:
-            # Silently ignore binding errors for unsupported widgets
-            pass
-
-        # Bind to children
-        for child in widget.GetChildren():
-            self.bind_events_recursive(child)
+    def cleanup(self):
+        logger.debug("triggering cleanup for PromptCard")
+        self.card_moved.disconnect()
+        self.deleteLater()
 
     def setup_ui(self):
-        main_sizer = wx.BoxSizer(wx.VERTICAL)
-        prompt_sizer = wx.BoxSizer(wx.VERTICAL)
+        wrapper = QWidget()
+        wrapper.setObjectName("PromptCard")
+        style_manager.attach(wrapper, "prompt_card")
+
+        main_layout = QVBoxLayout()
+        main_layout.addStretch()
+
+        prompt_layout = QVBoxLayout()
+        prompt_layout.setSpacing(5)
 
         # Header with bold font
-        header = wx.StaticText(self, label=self.prompt["name"])
-        header_font = header.GetFont()
-        header_font.SetWeight(wx.FONTWEIGHT_BOLD)
-        header_font.SetPointSize(11)
-        header.SetFont(header_font)
-        header.SetForegroundColour(wx.Colour(70, 130, 180))  # Steel blue
+        header = QLabel(self.prompt["name"])
+        header_font = QFont()
+        header_font.setBold(True)
+        header_font.setPointSize(11)
+        header.setFont(header_font)
+        style_manager.attach(header, "prompt_header")
+        header.setWordWrap(True)
 
-        prompt_sizer.Add(header, 0, wx.ALL, 8)
+        prompt_layout.addWidget(header)
 
         # Content - first few lines
         content_lines = self.prompt["content"].split("\n")
-        content_preview = "\n".join(content_lines[:1])  # First line
+        content_preview = "\n".join(content_lines[:3])  # First three lines
         if len(content_lines) > 3:
-            content_preview += "\n..."
+            content_preview += "..."
 
-        content = wx.StaticText(self, label=content_preview)
-        content.Wrap(300)  # Wrap text
-        prompt_sizer.Add(content, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
+        content = QLabel(content_preview)
+        content.setWordWrap(True)
+        content.setMinimumWidth(300)
+        content.setMinimumHeight(80)
+        prompt_layout.addWidget(content)
+        style_manager.attach(content, "prompt_card_content")
 
-        main_sizer.Add(prompt_sizer, 0, wx.LEFT | wx.RIGHT, 8)
+        main_layout.addLayout(prompt_layout)
 
         # Tags as blobs
         if self.prompt.get("tags"):
-            tags_sizer = wx.BoxSizer(wx.HORIZONTAL)
+            tags_layout = QHBoxLayout()
+            tags_layout.setSpacing(4)
             for tag in self.prompt["tags"]:
-                tag_blob = wx.Button(self, label=f"#{tag}", size=(-1, 22))
-                tag_blob.SetBackgroundColour(wx.Colour(240, 240, 240))
-                tag_blob.SetForegroundColour(wx.BLACK)
-                tag_blob.SetWindowStyle(wx.BORDER_NONE)
+                tag_blob = QPushButton(f"#{tag}")
+                style_manager.attach(tag_blob, "tag_blob")
                 # Bind click to copy tag to search
-                tag_blob.Bind(
-                    wx.EVT_BUTTON, lambda evt, t=tag: self.copy_tag_to_search(t)
+                tag_blob.clicked.connect(
+                    lambda checked, t=tag: self.copy_tag_to_search(t)
                 )
-                tags_sizer.Add(tag_blob, 0, wx.ALL, 2)
-            main_sizer.Add(tags_sizer, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
+                tags_layout.addWidget(tag_blob)
+            tags_layout.addStretch()
+            main_layout.addLayout(tags_layout)
 
-        self.SetSizer(main_sizer)
-        self.SetMinSize((-1, 120))
+        wrapper.setLayout(main_layout)
+        wrapper.setFixedHeight(150)
+        layout = QVBoxLayout()
+        layout.addWidget(wrapper)
+        self.setLayout(layout)
+        self.raise_()
 
     def copy_tag_to_search(self, tag):
         """Copy tag to search box"""
         try:
-            parent = self.GetParent() 
-            if parent:
-                parent = parent.GetParent() 
-                if parent:
-                    parent = parent.GetParent()
-                    top_parent = self.GetTopLevelParent()
-                    if top_parent and hasattr(top_parent, "search_ctrl"):
-                        search_ctrl = top_parent.search_ctrl
-                        wx.CallAfter(search_ctrl.SetValue, f"#{tag}")
+            # Find the main window to access search control
+            parent = self.parent()
+            while parent and not hasattr(parent, "search_ctrl"):
+                parent = parent.parent()
 
-                        # Trigger search after a short delay to ensure value is set
-                        def trigger_search():
-                            try:
-                                evt = wxCommandEvent(wx.wxEVT_SEARCHCTRL_SEARCH_BTN)
-                                wx.PostEvent(search_ctrl, evt)
-                            except Exception as e:
-                                logger.error(f"Error triggering search: {e}")
+            if parent and hasattr(parent, "search_ctrl"):
+                search_ctrl = parent.search_ctrl
+                search_ctrl.setText(f"#{tag}")
 
-                        wx.CallAfter(trigger_search)
-                    else:
-                        logger.error(
-                            "Could not find search control in top-level parent"
-                        )
+                # Trigger search
+                if hasattr(parent, "on_search"):
+                    parent.on_search()
+            else:
+                logger.error("Could not find search control in parent hierarchy")
         except Exception as e:
             logger.error(f"Error copying tag to search: {e}")
 
-    def on_card_click(self, event):
-        try:
-            if not self.dragging:
-                self.dragging = True
-                self.original_position = self.GetPosition()
-                self.drag_start_position = event.GetPosition()
-                self.drag_start_time = time.time_ns() / 1e6  # Convert to milliseconds
-                self.Raise()  # Bring the window to the front
-
-                self.CaptureMouse()
-        except Exception as e:
-            wx.MessageBox(
-                f"Error handling card click: {e}", "Error", wx.OK | wx.ICON_ERROR
-            )
-        # Always skip to allow normal event processing
-        event.Skip()
-
-    def on_right_click(self, event):
+    def contextMenuEvent(self, event):
         """Show context menu"""
         if self.dragging:
             # If dragging, ignore right click to avoid context menu during drag
             return
         try:
-            menu = wx.Menu()
+            from PySide6.QtWidgets import QMenu
 
-            edit_item = menu.Append(wx.ID_ANY, "Edit Prompt")
-            delete_item = menu.Append(wx.ID_ANY, "Delete Prompt")
+            menu = QMenu(self)
+            style_manager.attach(menu, "context_menu")
+
+            edit_item = menu.addAction("Edit Prompt")
+            delete_item = menu.addAction("Delete Prompt")
 
             # Add separator and copy content option
-            menu.AppendSeparator()
-            copy_content_item = menu.Append(wx.ID_ANY, "Copy Content")
+            menu.addSeparator()
+            copy_content_item = menu.addAction("Copy Content")
 
-            def on_edit(evt):
+            def on_edit():
                 try:
                     if self.on_edit:  # Check if callback exists
                         self.on_edit(self.prompt)
                     else:
-                        wx.MessageBox(
-                            "Edit callback not set", "Error", wx.OK | wx.ICON_WARNING
-                        )
+                        from PySide6.QtWidgets import QMessageBox
+
+                        QMessageBox.warning(self, "Error", "Edit callback not set")
                 except Exception as e:
-                    wx.MessageBox(
-                        f"Error editing prompt: {e}", "Error", wx.OK | wx.ICON_ERROR
-                    )
+                    from PySide6.QtWidgets import QMessageBox
 
-            def on_delete(evt):
+                    QMessageBox.critical(self, "Error", f"Error editing prompt: {e}")
+
+            def on_delete():
                 try:
-                    # Show confirmation dialog
-                    dlg = wx.MessageDialog(
-                        self,
-                        f"Are you sure you want to delete '{self.prompt['name']}'?",
-                        "Confirm Delete",
-                        wx.YES_NO | wx.NO_DEFAULT | wx.ICON_QUESTION,
-                    )
-                    result = dlg.ShowModal()
-                    dlg.Destroy()
+                    from PySide6.QtWidgets import QMessageBox
 
-                    if result == wx.ID_YES:
+                    # Show confirmation dialog
+                    reply = QMessageBox.question(
+                        self,
+                        "Confirm Delete",
+                        f"Are you sure you want to delete '{self.prompt['name']}'?",
+                        QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
+                        QMessageBox.StandardButton.No,
+                    )
+
+                    if reply == QMessageBox.StandardButton.Yes:
                         # Ensure the callback exists before calling
                         if self.on_delete:
                             # Call the delete callback passed from MainFrame
-                            # Wrap in try/except specifically for this call
                             try:
                                 self.on_delete(self.prompt["id"])
                             except Exception as delete_error:
-                                wx.MessageBox(
-                                    f"Error deleting prompt in callback: {delete_error}",
+                                QMessageBox.critical(
+                                    self,
                                     "Error",
-                                    wx.OK | wx.ICON_ERROR,
+                                    f"Error deleting prompt in callback: {delete_error}",
                                 )
-                                logger.error(
-                                    f"Detailed delete error: {delete_error}"
-                                )  # Log for debugging
+                                logger.error(f"Detailed delete error: {delete_error}")
                         else:
-                            wx.MessageBox(
-                                "Delete callback not set",
-                                "Error",
-                                wx.OK | wx.ICON_WARNING,
+                            QMessageBox.warning(
+                                self, "Error", "Delete callback not set"
                             )
 
                 except Exception as e:
-                    # Catch any errors in the dialog or confirmation logic
-                    wx.MessageBox(
-                        f"Error in delete confirmation: {e}",
-                        "Error",
-                        wx.OK | wx.ICON_ERROR,
-                    )
-                    logger.error(
-                        f"Detailed confirmation error: {e}"
-                    )  # Log for debugging
+                    from PySide6.QtWidgets import QMessageBox
 
-            def on_copy_content(evt):
+                    QMessageBox.critical(
+                        self, "Error", f"Error in delete confirmation: {e}"
+                    )
+                    logger.error(f"Detailed confirmation error: {e}")
+
+            def on_copy_content():
                 try:
                     if self.on_click:  # Check if callback exists
                         self.on_click(self.prompt)  # This copies to clipboard
                     else:
-                        wx.MessageBox(
-                            "Copy callback not set", "Error", wx.OK | wx.ICON_WARNING
-                        )
-                except Exception as e:
-                    wx.MessageBox(
-                        f"Error copying content: {e}", "Error", wx.OK | wx.ICON_ERROR
-                    )
+                        from PySide6.QtWidgets import QMessageBox
 
-            # Bind menu events
-            self.Bind(wx.EVT_MENU, on_edit, edit_item)
-            self.Bind(wx.EVT_MENU, on_delete, delete_item)
-            self.Bind(wx.EVT_MENU, on_copy_content, copy_content_item)
+                        QMessageBox.warning(self, "Error", "Copy callback not set")
+                except Exception as e:
+                    from PySide6.QtWidgets import QMessageBox
+
+                    QMessageBox.critical(self, "Error", f"Error copying content: {e}")
+
+            # Connect menu actions
+            edit_item.triggered.connect(on_edit)
+            delete_item.triggered.connect(on_delete)
+            copy_content_item.triggered.connect(on_copy_content)
 
             # Show the popup menu
-            self.PopupMenu(menu)
-            menu.Destroy()
+            if isinstance(event, QContextMenuEvent):
+                menu.exec(event.globalPos())
+            else:
+                from PySide6.QtGui import QCursor
+
+                menu.exec(QCursor.pos())
 
         except Exception as e:
-            # Catch any general errors in creating or showing the menu
-            wx.MessageBox(
-                f"Error showing context menu: {e}", "Error", wx.OK | wx.ICON_ERROR
-            )
-            logger.error(f"Detailed menu error: {e}")  # Log for debugging
+            from PySide6.QtWidgets import QMessageBox
 
-    def on_mouse_move(self, event):
-        if (
-            self.dragging and event.Dragging() and self.HasCapture()
-        ):  # Check HasCapture for safety
-            # Get the screen position of the mouse
-            screen_pt = event.GetEventObject().ClientToScreen(event.GetPosition())
-            # Convert screen position to parent client coordinates
-            parent_pt = self.GetParent().ScreenToClient(screen_pt)
-            # Calculate new position based on the initial offset
-            new_pos = (
-                parent_pt.x - self.drag_start_position.x,
-                parent_pt.y - self.drag_start_position.y,
-            )
-            # Move the panel
-            self.SetPosition(new_pos)
-            self.Raise()
+            QMessageBox.critical(self, "Error", f"Error showing context menu: {e}")
+            logger.error(f"Detailed menu error: {e}")
 
-        event.Skip()
-
-    def on_mouse_up(self, event):
-        """Stop dragging the prompt card or finalize click"""
-        logger.debug("Mouse up event detected, stopping drag if in progress")
-        if self.dragging:
+    def mousePressEvent(self, event):
+        if event.button() == Qt.MouseButton.LeftButton:
+            self.drag_start_position = event.position().toPoint()
             self.dragging = False
-            # Return to the original position after dragging
-            self.SetPosition(self.original_position)
-            # Release the mouse capture
-            self.ReleaseMouse()
+        super().mousePressEvent(event)
 
-        # If it wasn't a drag (or a very tiny one), treat it as a click
-        # You might want a small threshold check for 'tiny drag' if needed.
-        logger.debug("Checking for click")
-        logger.debug(f"Click time threshold: {self.clicktime}")
-        logger.debug(f"Mouse up time: {time.time_ns() / 1e6 - self.drag_start_time}")
-        if time.time_ns() / 1e6 - self.drag_start_time < self.clicktime:
-            # Call the click callback only if it wasn't a significant drag
-            try:
-                # Pass the event to the callback if needed, or just the prompt
+    def mouseMoveEvent(self, event):
+        if not (event.buttons() & Qt.MouseButton.LeftButton):
+            return
+        if (
+            event.position().toPoint() - self.drag_start_position
+        ).manhattanLength() < 10:
+            return
+        self.dragging = True
+        # Create drag operation
+        drag = QDrag(self)
+        mime_data = QMimeData()
+        mime_data.setText(str(self.current_index))
+        drag.setMimeData(mime_data)
+
+        # Create pixmap for visual feedback
+        pixmap = QPixmap(self.size())
+        self.render(pixmap)
+        drag.setPixmap(pixmap)
+        drag.setHotSpot(event.position().toPoint())
+
+        # Execute drag operation
+        drag.exec(Qt.DropAction.MoveAction)
+
+    def dragEnterEvent(self, event):
+        if event.mimeData().hasText() and event.source() != self:
+            event.acceptProposedAction()
+
+    def dropEvent(self, event):
+        if event.mimeData().hasText():
+            from_index = int(event.mimeData().text())
+            logger.debug(
+                f"Emitting card moved signal from {from_index} to {self.current_index}"
+            )
+            self.card_moved.emit(from_index, self.current_index)
+            event.acceptProposedAction()
+
+    def mouseReleaseEvent(self, event):
+        if event.button() == Qt.MouseButton.LeftButton and not self.dragging:
+            # Handle click event
+            if hasattr(self, "on_click") and callable(self.on_click):
                 self.on_click(self.prompt)
-            except Exception as e:
-                wx.MessageBox(
-                    f"Error handling card click: {e}", "Error", wx.OK | wx.ICON_ERROR
-                )
-
-        event.Skip()

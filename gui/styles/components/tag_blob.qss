@@ -1,0 +1,12 @@
+QPushButton {
+    background-color: {accent_1};
+    color: black;
+    border: none;
+    border-radius: 0px;
+    padding: 2px 8px;
+    font-size: 12px;
+    min-height: 22px;
+}
+QPushButton:hover {
+    background-color: {accent_1_hover};
+}

@@ -8,8 +8,12 @@ import sys
 import logging
 import click
 from app import ClimptApp
+import signal
 
 logger = logging.getLogger(__name__)
+
+# Handle Ctrl+C gracefully
+signal.signal(signal.SIGINT, signal.SIG_DFL)
 
 
 @click.option("--verbose", "-v", count=True, help="Increase verbosity of logging")
@@ -22,12 +26,14 @@ def main(verbose, quiet):
         level=max(
             (min(logging.CRITICAL - verbosity * 10, logging.CRITICAL), logging.DEBUG)
         ),
-        format="[%(asctime)s] [%(filename)16s:%(lineno)3s)] [%(levelname)8s]: [%(message)s]",
+        format="[%(asctime)s] [%(filename)16s:%(lineno)3s)] [%(levelname)8s]: %(message)s",
         datefmt="%Y-%m-%d] [%H:%M:%S",
     )
+
     app = ClimptApp()
-    app.MainLoop()
-    sys.exit(0)
+    exit_code = app.exec()
+    logger.debug("Application exited with code %s", exit_code)
+    sys.exit(exit_code)
 
 
 if __name__ == "__main__":
