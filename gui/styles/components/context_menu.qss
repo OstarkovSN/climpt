@@ -1,0 +1,12 @@
+QMenu {
+    background-color: white;
+    border: 1px solid {accent_1};
+    border-radius: 4px;
+}
+QMenu::item {
+    padding: 4px 20px;
+}
+QMenu::item:selected {
+    background-color: {accent_3};
+    color: white;
+}

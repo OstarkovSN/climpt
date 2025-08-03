@@ -1,0 +1,8 @@
+hotkeys:
+  overlay: alt+p
+  tags: alt+t
+overlay:
+  corner: Top Right
+  leave_holes: false
+  side_panel_leave_holes: true
+  transform_into_side_panel: true

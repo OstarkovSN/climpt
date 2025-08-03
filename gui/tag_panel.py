@@ -1,11 +1,17 @@
-from PyQt6.QtWidgets import (
-    QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QApplication
+from PySide6.QtWidgets import (
+    QWidget,
+    QVBoxLayout,
+    QHBoxLayout,
+    QLabel,
+    QPushButton,
+    QApplication,
 )
-from PyQt6.QtCore import Qt, pyqtSignal
-from PyQt6.QtGui import QColor, QFont
+from PySide6.QtCore import Qt, Signal
+from PySide6.QtGui import QColor, QFont
 import colorsys
 import hashlib
 import logging
+from gui.styles import style_manager
 
 logger = logging.getLogger(__name__)
 
@@ -13,14 +19,8 @@ logger = logging.getLogger(__name__)
 class TagPanel(QWidget):
     def __init__(self, parent):
         super().__init__(parent)
-        self.setStyleSheet("""
-            QWidget {
-                background-color: #f0f0f0;
-                border: 1px solid #d0d0d0;
-                border-radius: 4px;
-            }
-        """)
-        
+        style_manager.attach(self, "tag_panel")
+
         self.layout = QVBoxLayout()
         self.layout.setContentsMargins(5, 5, 5, 5)
         self.layout.setSpacing(5)
@@ -68,10 +68,10 @@ class TagPanel(QWidget):
     def create_tag_button(self, tag, count):
         btn = QPushButton(f"#{tag} ({count})" if count > 0 else f"#{tag}")
         color = self.get_tag_color(tag)
-        
+
         # Convert QColor to hex for stylesheet
         color_hex = color.name()
-        
+
         btn.setStyleSheet(f"""
             QPushButton {{
                 background-color: {color_hex};
@@ -87,7 +87,7 @@ class TagPanel(QWidget):
                 background-color: {self.adjust_brightness(color, 20).name()};
             }}
         """)
-        
+
         btn.setCursor(Qt.CursorShape.PointingHandCursor)
         return btn
 

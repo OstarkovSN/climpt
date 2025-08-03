@@ -1,6 +1,6 @@
 import logging
 import time
-from PyQt6.QtWidgets import (
+from PySide6.QtWidgets import (
     QWidget,
     QVBoxLayout,
     QHBoxLayout,
@@ -8,17 +8,30 @@ from PyQt6.QtWidgets import (
     QPushButton,
     QMenu,
     QApplication,
+    QFrame,
 )
-from PyQt6.QtCore import Qt, QPoint, pyqtSignal
-from PyQt6.QtGui import QFont, QCursor, QMouseEvent, QContextMenuEvent
+from PySide6.QtCore import Qt, QPoint, Signal, QMimeData
+from PySide6.QtGui import QFont, QCursor, QMouseEvent, QContextMenuEvent
+from PySide6.QtGui import QDrag, QPixmap
+from gui.styles import style_manager
 
 logger = logging.getLogger(__name__)
 
 
-class PromptCard(QWidget):
+class PromptCard(QFrame):
     clicktime = 100  # (milliseconds)
+    card_moved = Signal(int, int)
 
-    def __init__(self, parent, prompt, on_click, on_edit, on_delete):
+    def __init__(
+        self,
+        parent,
+        prompt,
+        on_click,
+        on_edit,
+        on_delete,
+        original_index,
+        current_index,
+    ):
         """
         Constructor for PromptCard.
 
@@ -35,31 +48,24 @@ class PromptCard(QWidget):
         self.on_edit = on_edit
         self.on_delete = on_delete  # This is MainFrame.delete_prompt
         self.dragging = False
-        self.original_position = None
         self.drag_start_position = None
-        self.drag_start_time = None
-
-        self.setStyleSheet("""
-            QWidget {
-                background-color: white;
-                border: 1px solid #d0d0d0;
-                border-radius: 4px;
-            }
-        """)
-
+        self.original_index = original_index
+        self.current_index = current_index
+        self.setAcceptDrops(True)
         self.setup_ui()
 
-        # Bind events to the main widget
-        self.mousePressEvent = self.on_card_click
-        self.mouseDoubleClickEvent = self.on_card_click
-        self.contextMenuEvent = self.on_right_click
-        self.mouseMoveEvent = self.on_mouse_move
-        self.mouseReleaseEvent = self.on_mouse_up
+    def cleanup(self):
+        logger.debug("triggering cleanup for PromptCard")
+        self.card_moved.disconnect()
+        self.deleteLater()
 
     def setup_ui(self):
+        wrapper = QWidget()
+        wrapper.setObjectName("PromptCard")
+        style_manager.attach(wrapper, "prompt_card")
+
         main_layout = QVBoxLayout()
-        main_layout.setContentsMargins(8, 8, 8, 8)
-        main_layout.setSpacing(5)
+        main_layout.addStretch()
 
         prompt_layout = QVBoxLayout()
         prompt_layout.setSpacing(5)
@@ -70,21 +76,23 @@ class PromptCard(QWidget):
         header_font.setBold(True)
         header_font.setPointSize(11)
         header.setFont(header_font)
-        header.setStyleSheet("color: #4682B4;")  # Steel blue
+        style_manager.attach(header, "prompt_header")
         header.setWordWrap(True)
 
         prompt_layout.addWidget(header)
 
         # Content - first few lines
         content_lines = self.prompt["content"].split("\n")
-        content_preview = "\n".join(content_lines[:1])  # First line
+        content_preview = "\n".join(content_lines[:3])  # First three lines
         if len(content_lines) > 3:
-            content_preview += "\n..."
+            content_preview += "..."
 
         content = QLabel(content_preview)
         content.setWordWrap(True)
         content.setMinimumWidth(300)
+        content.setMinimumHeight(80)
         prompt_layout.addWidget(content)
+        style_manager.attach(content, "prompt_card_content")
 
         main_layout.addLayout(prompt_layout)
 
@@ -94,20 +102,7 @@ class PromptCard(QWidget):
             tags_layout.setSpacing(4)
             for tag in self.prompt["tags"]:
                 tag_blob = QPushButton(f"#{tag}")
-                tag_blob.setStyleSheet("""
-                    QPushButton {
-                        background-color: #f0f0f0;
-                        color: black;
-                        border: none;
-                        border-radius: 11px;
-                        padding: 2px 8px;
-                        font-size: 12px;
-                        min-height: 22px;
-                    }
-                    QPushButton:hover {
-                        background-color: #e0e0e0;
-                    }
-                """)
+                style_manager.attach(tag_blob, "tag_blob")
                 # Bind click to copy tag to search
                 tag_blob.clicked.connect(
                     lambda checked, t=tag: self.copy_tag_to_search(t)
@@ -116,8 +111,12 @@ class PromptCard(QWidget):
             tags_layout.addStretch()
             main_layout.addLayout(tags_layout)
 
-        self.setLayout(main_layout)
-        self.setFixedHeight(120)
+        wrapper.setLayout(main_layout)
+        wrapper.setFixedHeight(150)
+        layout = QVBoxLayout()
+        layout.addWidget(wrapper)
+        self.setLayout(layout)
+        self.raise_()
 
     def copy_tag_to_search(self, tag):
         """Copy tag to search box"""
@@ -139,51 +138,16 @@ class PromptCard(QWidget):
         except Exception as e:
             logger.error(f"Error copying tag to search: {e}")
 
-    def on_card_click(self, event):
-        """Handle card click event - start drag operation"""
-        logger.debug("Mouse down event detected")
-        try:
-            if event.button() == Qt.MouseButton.LeftButton and not self.dragging:
-                self.dragging = True
-                self.original_position = self.pos()
-                if isinstance(event, QMouseEvent):
-                    self.drag_start_position = event.pos()
-                else:
-                    self.drag_start_position = QPoint(0, 0)
-                self.drag_start_time = (
-                    time.time_ns() // 1000000
-                )  # Convert to milliseconds
-                self.raise_()  # Bring the widget to the front
-                self.setCursor(Qt.CursorShape.OpenHandCursor)
-        except Exception as e:
-            from PyQt6.QtWidgets import QMessageBox
-
-            QMessageBox.critical(self, "Error", f"Error handling card click: {e}")
-        # Don't call super() for custom event handling
-
-    def on_right_click(self, event):
+    def contextMenuEvent(self, event):
         """Show context menu"""
         if self.dragging:
             # If dragging, ignore right click to avoid context menu during drag
             return
         try:
-            from PyQt6.QtWidgets import QMenu
+            from PySide6.QtWidgets import QMenu
 
             menu = QMenu(self)
-            menu.setStyleSheet("""
-                QMenu {
-                    background-color: white;
-                    border: 1px solid #cccccc;
-                    border-radius: 4px;
-                }
-                QMenu::item {
-                    padding: 4px 20px;
-                }
-                QMenu::item:selected {
-                    background-color: #4a90e2;
-                    color: white;
-                }
-            """)
+            style_manager.attach(menu, "context_menu")
 
             edit_item = menu.addAction("Edit Prompt")
             delete_item = menu.addAction("Delete Prompt")
@@ -197,17 +161,17 @@ class PromptCard(QWidget):
                     if self.on_edit:  # Check if callback exists
                         self.on_edit(self.prompt)
                     else:
-                        from PyQt6.QtWidgets import QMessageBox
+                        from PySide6.QtWidgets import QMessageBox
 
                         QMessageBox.warning(self, "Error", "Edit callback not set")
                 except Exception as e:
-                    from PyQt6.QtWidgets import QMessageBox
+                    from PySide6.QtWidgets import QMessageBox
 
                     QMessageBox.critical(self, "Error", f"Error editing prompt: {e}")
 
             def on_delete():
                 try:
-                    from PyQt6.QtWidgets import QMessageBox
+                    from PySide6.QtWidgets import QMessageBox
 
                     # Show confirmation dialog
                     reply = QMessageBox.question(
@@ -237,7 +201,7 @@ class PromptCard(QWidget):
                             )
 
                 except Exception as e:
-                    from PyQt6.QtWidgets import QMessageBox
+                    from PySide6.QtWidgets import QMessageBox
 
                     QMessageBox.critical(
                         self, "Error", f"Error in delete confirmation: {e}"
@@ -249,11 +213,11 @@ class PromptCard(QWidget):
                     if self.on_click:  # Check if callback exists
                         self.on_click(self.prompt)  # This copies to clipboard
                     else:
-                        from PyQt6.QtWidgets import QMessageBox
+                        from PySide6.QtWidgets import QMessageBox
 
                         QMessageBox.warning(self, "Error", "Copy callback not set")
                 except Exception as e:
-                    from PyQt6.QtWidgets import QMessageBox
+                    from PySide6.QtWidgets import QMessageBox
 
                     QMessageBox.critical(self, "Error", f"Error copying content: {e}")
 
@@ -266,95 +230,60 @@ class PromptCard(QWidget):
             if isinstance(event, QContextMenuEvent):
                 menu.exec(event.globalPos())
             else:
-                from PyQt6.QtGui import QCursor
+                from PySide6.QtGui import QCursor
 
                 menu.exec(QCursor.pos())
 
         except Exception as e:
-            from PyQt6.QtWidgets import QMessageBox
+            from PySide6.QtWidgets import QMessageBox
 
             QMessageBox.critical(self, "Error", f"Error showing context menu: {e}")
             logger.error(f"Detailed menu error: {e}")
 
-    def on_mouse_move(self, event):
-        """Handle mouse move events for dragging"""
-        if self.dragging and event.buttons() & Qt.MouseButton.LeftButton:
-            try:
-                # Calculate new position based on the initial offset
-                parent = self.parent()
-                if parent:
-                    # Convert global position to parent coordinates
-                    global_pos = event.globalPosition().toPoint()
-                    parent_pos = parent.mapFromGlobal(global_pos)
-                    new_pos = parent_pos - self.drag_start_position
+    def mousePressEvent(self, event):
+        if event.button() == Qt.MouseButton.LeftButton:
+            self.drag_start_position = event.position().toPoint()
+            self.dragging = False
+        super().mousePressEvent(event)
 
-                    # Move the widget
-                    self.move(new_pos)
-                    self.raise_()
-                    self.setCursor(Qt.CursorShape.ClosedHandCursor)
-            except Exception as e:
-                logger.error(f"Error during drag move: {e}")
+    def mouseMoveEvent(self, event):
+        if not (event.buttons() & Qt.MouseButton.LeftButton):
+            return
+        if (
+            event.position().toPoint() - self.drag_start_position
+        ).manhattanLength() < 10:
+            return
+        self.dragging = True
+        # Create drag operation
+        drag = QDrag(self)
+        mime_data = QMimeData()
+        mime_data.setText(str(self.current_index))
+        drag.setMimeData(mime_data)
 
-        super().mouseMoveEvent(event)
+        # Create pixmap for visual feedback
+        pixmap = QPixmap(self.size())
+        self.render(pixmap)
+        drag.setPixmap(pixmap)
+        drag.setHotSpot(event.position().toPoint())
 
-    def on_mouse_up(self, event):
-        """Stop dragging the prompt card or finalize click"""
-        logger.debug("Mouse up event detected")
-        try:
-            if event.button() == Qt.MouseButton.LeftButton:
-                if self.dragging:
-                    self.dragging = False
-                    # Return to the original position after dragging
-                    self.move(self.original_position)
-                    self.setCursor(Qt.CursorShape.ArrowCursor)
+        # Execute drag operation
+        drag.exec(Qt.DropAction.MoveAction)
 
-                # Check if it was a quick click (not a drag)
-                if (
-                    hasattr(self, "drag_start_time")
-                    and (time.time_ns() // 1000000 - self.drag_start_time)
-                    < self.clicktime
-                ):
-                    # Call the click callback only if it wasn't a significant drag
-                    try:
-                        if self.on_click:  # Check if callback exists
-                            self.on_click(self.prompt)  # This copies to clipboard
-                        else:
-                            logger.warning("Click callback not set")
-                    except Exception as e:
-                        from PyQt6.QtWidgets import QMessageBox
+    def dragEnterEvent(self, event):
+        if event.mimeData().hasText() and event.source() != self:
+            event.acceptProposedAction()
 
-                        QMessageBox.critical(
-                            self, "Error", f"Error handling card click: {e}"
-                        )
-        except Exception as e:
-            logger.error(f"Error in mouse up handler: {e}")
+    def dropEvent(self, event):
+        if event.mimeData().hasText():
+            from_index = int(event.mimeData().text())
+            logger.debug(
+                f"Emitting card moved signal from {from_index} to {self.current_index}"
+            )
+            self.card_moved.emit(from_index, self.current_index)
+            event.acceptProposedAction()
 
-        super().mouseReleaseEvent(event)
-
-    def enterEvent(self, event):
-        """Handle mouse enter event - visual feedback"""
-        try:
-            self.setStyleSheet("""
-                QWidget {
-                    background-color: white;
-                    border: 1px solid #a0a0a0;
-                    border-radius: 4px;
-                }
-            """)
-        except Exception as e:
-            logger.error(f"Error in enter event: {e}")
-        super().enterEvent(event)
-
-    def leaveEvent(self, event):
-        """Handle mouse leave event - restore normal appearance"""
-        try:
-            self.setStyleSheet("""
-                QWidget {
-                    background-color: white;
-                    border: 1px solid #d0d0d0;
-                    border-radius: 4px;
-                }
-            """)
-        except Exception as e:
-            logger.error(f"Error in leave event: {e}")
-        super().leaveEvent(event)
+    def mouseReleaseEvent(self, event):
+        if event.button() == Qt.MouseButton.LeftButton and not self.dragging:
+            # Handle click event
+            if hasattr(self, "on_click") and callable(self.on_click):
+                self.on_click(self.prompt)

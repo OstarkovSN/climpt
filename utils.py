@@ -2,6 +2,7 @@
 
 import pyperclip
 import logging
+import re
 
 logger = logging.getLogger(__name__)
 
@@ -110,3 +111,9 @@ def truncate_text(text, max_length=100, suffix="..."):
         return suffix[:max_length]
 
     return text[: max_length - len(suffix)] + suffix
+
+
+def correct_qss(qss):
+    qss = re.sub("{([^}\n]*)\n", r"{{\1\n", qss)
+    qss = re.sub("\n([^{\n]*)}", r"\n\1}}", qss)
+    return qss
