@@ -1,7 +1,7 @@
 [tool.pixi.workspace]
 authors = ["Ostarkov S.N. ostarkovstepan@gmail.com"]
 channels = ["https://repo.anaconda.com/pkgs/main", "https://repo.anaconda.com/pkgs/r", "conda-forge",]
-platforms = ["win-64", "linux-64"]
+platforms = ["win-64", "linux-64", "osx-64"]
 
 [tool.pixi.tasks]
 start = "python main.py"

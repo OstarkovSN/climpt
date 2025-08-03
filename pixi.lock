@@ -47,6 +47,34 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/b9/2b/614b4752f2e127db5cc206abc23a8c19678e92b23c3db30fc86ab731d3bd/PyYAML-6.0.2-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/a3/dc/17031897dae0efacfea57dfd3a82fdd2a2aeb58e0ff71b77b87e44edc772/setuptools-80.9.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/5a/07/53b2532ecd42ff925feb06b7bb16917f5f99f9c3470f0815c256789d818b/shiboken6-6.9.1-cp39-abi3-manylinux_2_28_x86_64.whl
+      osx-64:
+      - conda: https://repo.anaconda.com/pkgs/main/osx-64/bzip2-1.0.8-h6c40b1e_6.conda
+      - conda: https://repo.anaconda.com/pkgs/main/osx-64/ca-certificates-2025.2.25-hecd8cb5_0.conda
+      - conda: https://repo.anaconda.com/pkgs/main/osx-64/expat-2.7.1-h6d0c2b6_0.conda
+      - conda: https://repo.anaconda.com/pkgs/main/osx-64/libcxx-17.0.6-hf547dac_4.conda
+      - conda: https://repo.anaconda.com/pkgs/main/osx-64/libffi-3.4.4-hecd8cb5_1.conda
+      - conda: https://repo.anaconda.com/pkgs/main/osx-64/ncurses-6.5-h923df54_0.conda
+      - conda: https://repo.anaconda.com/pkgs/main/osx-64/openssl-3.0.17-hee2dfae_0.conda
+      - conda: https://repo.anaconda.com/pkgs/main/osx-64/python-3.12.11-he8d2d4c_0.conda
+      - conda: https://repo.anaconda.com/pkgs/main/osx-64/readline-8.2-hca72f7f_0.conda
+      - conda: https://repo.anaconda.com/pkgs/main/osx-64/sqlite-3.50.2-hc8b0dd6_1.conda
+      - conda: https://repo.anaconda.com/pkgs/main/osx-64/tk-8.6.14-h0a12a5f_1.conda
+      - conda: https://repo.anaconda.com/pkgs/main/noarch/tzdata-2025b-h04d1e81_0.conda
+      - conda: https://repo.anaconda.com/pkgs/main/osx-64/xz-5.6.4-h46256e1_1.conda
+      - conda: https://repo.anaconda.com/pkgs/main/osx-64/zlib-1.2.13-h4b97444_1.conda
+      - pypi: https://files.pythonhosted.org/packages/4d/3f/3bc3f1d83f6e4a7fcb834d3720544ca597590425be5ba9db032b2bf322a2/altgraph-0.17.4-py2.py3-none-any.whl
+      - pypi: https://files.pythonhosted.org/packages/85/32/10bb5764d90a8eee674e9dc6f4db6a0ab47c8c4d0d83c27f7c39ac415a4d/click-8.2.1-py3-none-any.whl
+      - pypi: https://files.pythonhosted.org/packages/d1/5d/c059c180c84f7962db0aeae7c3b9303ed1d73d76f2bfbc32bc231c8be314/macholib-1.16.3-py2.py3-none-any.whl
+      - pypi: https://files.pythonhosted.org/packages/20/12/38679034af332785aac8774540895e234f4d07f7545804097de4b666afd8/packaging-25.0-py3-none-any.whl
+      - pypi: https://files.pythonhosted.org/packages/a0/dd/e5f4a4be80e291d2443ac7e73fa78f17003e4f2e3ec15a2ffdea0583a5c6/pyinstaller-6.14.2-py3-none-macosx_10_13_universal2.whl
+      - pypi: https://files.pythonhosted.org/packages/48/34/1d973d0dae849683e53fbcda84443ce016f315e6f4dc7605ede4f56a28c3/pyinstaller_hooks_contrib-2025.8-py3-none-any.whl
+      - pypi: https://files.pythonhosted.org/packages/30/23/2f0a3efc4d6a32f3b63cdff36cd398d9701d26cda58e3ab97ac79fb5e60d/pyperclip-1.9.0.tar.gz
+      - pypi: https://files.pythonhosted.org/packages/14/91/8e9c7f7e90431297de9856e90a156ade9420977e26d87996909c63f30bd2/PySide6-6.9.1-cp39-abi3-macosx_12_0_universal2.whl
+      - pypi: https://files.pythonhosted.org/packages/e7/e2/39b9e04335d7ac782b6459bf7abec90c36b8efaac5a88ef818e972c59387/PySide6_Addons-6.9.1-cp39-abi3-macosx_12_0_universal2.whl
+      - pypi: https://files.pythonhosted.org/packages/8a/59/714874db9ef3bbbbda654fd3223248969bea02ec1a5bfdd1c941c4e97749/PySide6_Essentials-6.9.1-cp39-abi3-macosx_12_0_universal2.whl
+      - pypi: https://files.pythonhosted.org/packages/86/0c/c581167fc46d6d6d7ddcfb8c843a4de25bdd27e4466938109ca68492292c/PyYAML-6.0.2-cp312-cp312-macosx_10_9_x86_64.whl
+      - pypi: https://files.pythonhosted.org/packages/a3/dc/17031897dae0efacfea57dfd3a82fdd2a2aeb58e0ff71b77b87e44edc772/setuptools-80.9.0-py3-none-any.whl
+      - pypi: https://files.pythonhosted.org/packages/98/98/34d4d25b79055959b171420d47fcc10121aefcbb261c91d5491252830e31/shiboken6-6.9.1-cp39-abi3-macosx_12_0_universal2.whl
       win-64:
       - conda: https://repo.anaconda.com/pkgs/main/win-64/bzip2-1.0.8-h2bbff1b_6.conda
       - conda: https://repo.anaconda.com/pkgs/main/win-64/ca-certificates-2025.2.25-haa95532_0.conda
@@ -108,6 +136,13 @@ packages:
   license_family: BSD
   size: 268384
   timestamp: 1714510571510
+- conda: https://repo.anaconda.com/pkgs/main/osx-64/bzip2-1.0.8-h6c40b1e_6.conda
+  sha256: 80bd9cac4f086056b4d2b8720fcfdc1dd8354be9f93b4aef1a853cdbc987e9bf
+  md5: 96224786021d0765ce05818fa3c59bdb
+  license: bzip2-1.0.8
+  license_family: BSD
+  size: 154557
+  timestamp: 1714510590009
 - conda: https://repo.anaconda.com/pkgs/main/win-64/bzip2-1.0.8-h2bbff1b_6.conda
   sha256: 4e30c9bfd4501555b0859c863e95ea044290babf3bf190b9d4fb38b06cf15c3c
   md5: 33e784123d565c38e68945f07b461282
@@ -125,6 +160,13 @@ packages:
   license_family: Other
   size: 132323
   timestamp: 1740582453836
+- conda: https://repo.anaconda.com/pkgs/main/osx-64/ca-certificates-2025.2.25-hecd8cb5_0.conda
+  sha256: 218c8f86fe4eef060c3c5ebd194f1db12e45a46abeb00fe7457ab3a5902a0ef1
+  md5: 12ab77db61795036e15a5b14929ad4a1
+  license: MPL-2.0
+  license_family: Other
+  size: 133715
+  timestamp: 1740582484873
 - conda: https://repo.anaconda.com/pkgs/main/win-64/ca-certificates-2025.2.25-haa95532_0.conda
   sha256: bfaac6331ef8c28b3c46cbb3fa27df52a0f5101e1a58474e3771c4183c44816e
   md5: 808dfb694164c6394052c42c02f04514
@@ -154,6 +196,15 @@ packages:
   license_family: MIT
   size: 185917
   timestamp: 1744659862400
+- conda: https://repo.anaconda.com/pkgs/main/osx-64/expat-2.7.1-h6d0c2b6_0.conda
+  sha256: 6ce290bed73e72a7cbff720d69be5a7d767e1bad4767c106b96578611b45d063
+  md5: 6cdc93776b7551083854e7f106a62720
+  depends:
+  - libcxx >=14.0.6
+  license: MIT
+  license_family: MIT
+  size: 153146
+  timestamp: 1744659891613
 - conda: https://repo.anaconda.com/pkgs/main/win-64/expat-2.7.1-h8ddb27b_0.conda
   sha256: 05832ad007294afea84150bd32a031659bc7e584fb12da13e388a75b945052e5
   md5: 011c43ed4c203fe09147107af9fd1b5a
@@ -172,6 +223,18 @@ packages:
   license: GPL-3.0-only
   size: 726762
   timestamp: 1727336193185
+- conda: https://repo.anaconda.com/pkgs/main/osx-64/libcxx-17.0.6-hf547dac_4.conda
+  sha256: 4ab9098607e97e1ff1a687cd88312d7764fb015018d04d07b14f3c79c52be58f
+  md5: 9f8b90f30742eab3e6800f46fdd89936
+  constrains:
+  - llvm 17.0.6
+  - clang 17.0.6
+  - llvm-tools  17.0.6
+  - llvm-openmp  17.0.6
+  license: Apache-2.0 WITH LLVM-exception
+  license_family: Apache
+  size: 497642
+  timestamp: 1750860742654
 - conda: https://repo.anaconda.com/pkgs/main/linux-64/libffi-3.4.4-h6a678d5_1.conda
   sha256: b0e7fe2e5d498bc5a2c57cf942701bba8f22ec55de55e092ffbffc40b816df88
   md5: 70646cc713f0c43926cfdcfe9b695fe0
@@ -182,6 +245,13 @@ packages:
   license_family: MIT
   size: 144691
   timestamp: 1714483282916
+- conda: https://repo.anaconda.com/pkgs/main/osx-64/libffi-3.4.4-hecd8cb5_1.conda
+  sha256: b8b8f0b62fd87118de2b967d042f2269abac54adc4356cba0f417d3119cdd605
+  md5: eb7f09ada4d95f1a26f483f1009d9286
+  license: MIT
+  license_family: MIT
+  size: 131641
+  timestamp: 1714483561919
 - conda: https://repo.anaconda.com/pkgs/main/win-64/libffi-3.4.4-hd77b12b_1.conda
   sha256: 43a437fde4c064b2f1be2342a7bc6edccbc13da6a4fb8a44d87e4e6e34c54b63
   md5: 9807b377e11739ae3e920e10e607e460
@@ -244,6 +314,12 @@ packages:
   license_family: MIT
   size: 440690
   timestamp: 1746022211479
+- pypi: https://files.pythonhosted.org/packages/d1/5d/c059c180c84f7962db0aeae7c3b9303ed1d73d76f2bfbc32bc231c8be314/macholib-1.16.3-py2.py3-none-any.whl
+  name: macholib
+  version: 1.16.3
+  sha256: 0e315d7583d38b8c77e815b1ecbdbf504a8258d8b3e17b61165c6feb60d18f2c
+  requires_dist:
+  - altgraph>=0.17
 - conda: https://repo.anaconda.com/pkgs/main/linux-64/ncurses-6.5-h7934f7d_0.conda
   sha256: 5ab33c1e90efbb3507116ae00d1f6740ec74104bb7028dc017f5f76796cee154
   md5: 0abfc090299da4bb031b84c64309757b
@@ -254,6 +330,15 @@ packages:
   license_family: MIT
   size: 1137647
   timestamp: 1753947487644
+- conda: https://repo.anaconda.com/pkgs/main/osx-64/ncurses-6.5-h923df54_0.conda
+  sha256: 64e55c28362595e21e6ed3953ee8d79f28e25d390e4604fea6f932605946936b
+  md5: 344eea75f2dc4bdbbe0ee4a263b4b103
+  depends:
+  - __osx >=10.15
+  license: MIT AND X11
+  license_family: MIT
+  size: 1048992
+  timestamp: 1753947521640
 - conda: https://repo.anaconda.com/pkgs/main/linux-64/openssl-3.0.17-h5eee18b_0.conda
   sha256: 4d56fea198695951906fd7c78dc6d3dc18d0826a6c90f77275e8d5f26b3b3869
   md5: c032152f4080dd61875d5047641c8bf2
@@ -264,6 +349,15 @@ packages:
   license_family: Apache
   size: 5465379
   timestamp: 1753176689082
+- conda: https://repo.anaconda.com/pkgs/main/osx-64/openssl-3.0.17-hee2dfae_0.conda
+  sha256: cac05e7161155f1b18b956736abbcbec794fc3eff5b6d686d22c9e321b26d1b5
+  md5: 12d105e2148a26048a75ebc2d0b6d2d4
+  depends:
+  - ca-certificates
+  license: Apache-2.0
+  license_family: Apache
+  size: 4773985
+  timestamp: 1753177400112
 - conda: https://repo.anaconda.com/pkgs/main/win-64/openssl-3.0.17-h35632f6_0.conda
   sha256: e6404e49834ded17306bb2ddd74945f0db3dd18f65860063a8230e9990692ba8
   md5: d058f636337d1606c03e430e416c925f
@@ -313,6 +407,24 @@ packages:
   - psutil ; extra == 'hook-testing'
   - argcomplete ; extra == 'completion'
   requires_python: '>=3.8,<3.14'
+- pypi: https://files.pythonhosted.org/packages/a0/dd/e5f4a4be80e291d2443ac7e73fa78f17003e4f2e3ec15a2ffdea0583a5c6/pyinstaller-6.14.2-py3-none-macosx_10_13_universal2.whl
+  name: pyinstaller
+  version: 6.14.2
+  sha256: d77d18bf5343a1afef2772393d7a489d4ec2282dee5bca549803fc0d74b78330
+  requires_dist:
+  - setuptools>=42.0.0
+  - altgraph
+  - pefile>=2022.5.30,!=2024.8.26 ; sys_platform == 'win32'
+  - pywin32-ctypes>=0.2.1 ; sys_platform == 'win32'
+  - macholib>=1.8 ; sys_platform == 'darwin'
+  - pyinstaller-hooks-contrib>=2025.5
+  - importlib-metadata>=4.6 ; python_full_version < '3.10'
+  - packaging>=22.0
+  - pytest>=2.7.3 ; extra == 'hook-testing'
+  - execnet>=1.5.0 ; extra == 'hook-testing'
+  - psutil ; extra == 'hook-testing'
+  - argcomplete ; extra == 'completion'
+  requires_python: '>=3.8,<3.14'
 - pypi: https://files.pythonhosted.org/packages/b8/98/460a32d2e325ad0ea81e4df478a8d84b5ebe0ceaca0cd3088f16afcaba5f/pyinstaller-6.14.2-py3-none-manylinux2014_x86_64.whl
   name: pyinstaller
   version: 6.14.2
@@ -344,6 +456,15 @@ packages:
   name: pyperclip
   version: 1.9.0
   sha256: b7de0142ddc81bfc5c7507eea19da920b92252b548b96186caf94a5e2527d310
+- pypi: https://files.pythonhosted.org/packages/14/91/8e9c7f7e90431297de9856e90a156ade9420977e26d87996909c63f30bd2/PySide6-6.9.1-cp39-abi3-macosx_12_0_universal2.whl
+  name: pyside6
+  version: 6.9.1
+  sha256: f843ef39970a2f79757810fffd7b8e93ac42a3de9ea62f2a03648cde57648aed
+  requires_dist:
+  - shiboken6==6.9.1
+  - pyside6-essentials==6.9.1
+  - pyside6-addons==6.9.1
+  requires_python: '>=3.9,<3.14'
 - pypi: https://files.pythonhosted.org/packages/83/ff/95c941f53b0faebc27dbe361d8e971b77f504b9cf36f8f5d750fd82cd6fc/PySide6-6.9.1-cp39-abi3-win_amd64.whl
   name: pyside6
   version: 6.9.1
@@ -378,6 +499,14 @@ packages:
   - shiboken6==6.9.1
   - pyside6-essentials==6.9.1
   requires_python: '>=3.9,<3.14'
+- pypi: https://files.pythonhosted.org/packages/e7/e2/39b9e04335d7ac782b6459bf7abec90c36b8efaac5a88ef818e972c59387/PySide6_Addons-6.9.1-cp39-abi3-macosx_12_0_universal2.whl
+  name: pyside6-addons
+  version: 6.9.1
+  sha256: 7be0708fa89715c282541fca47e2ba97c0c8d2886e0236ef994b2dd8f52aacdd
+  requires_dist:
+  - shiboken6==6.9.1
+  - pyside6-essentials==6.9.1
+  requires_python: '>=3.9,<3.14'
 - pypi: https://files.pythonhosted.org/packages/0d/a9/a8e0209ba9116f2c2db990cfb79f2edbd5a3a428013be2df1f1cddd660a9/PySide6_Essentials-6.9.1-cp39-abi3-win_amd64.whl
   name: pyside6-essentials
   version: 6.9.1
@@ -389,6 +518,13 @@ packages:
   name: pyside6-essentials
   version: 6.9.1
   sha256: e5da48883f006c6206ef85874db74ddebcdf69b0281bd4f1642b1c5ac1d54aea
+  requires_dist:
+  - shiboken6==6.9.1
+  requires_python: '>=3.9,<3.14'
+- pypi: https://files.pythonhosted.org/packages/8a/59/714874db9ef3bbbbda654fd3223248969bea02ec1a5bfdd1c941c4e97749/PySide6_Essentials-6.9.1-cp39-abi3-macosx_12_0_universal2.whl
+  name: pyside6-essentials
+  version: 6.9.1
+  sha256: ed43435a70e018e1c22efcaf34a9430b83cfcad716dba661b03de21c13322fab
   requires_dist:
   - shiboken6==6.9.1
   requires_python: '>=3.9,<3.14'
@@ -416,6 +552,27 @@ packages:
   license_family: PSF
   size: 36236205
   timestamp: 1749130139275
+- conda: https://repo.anaconda.com/pkgs/main/osx-64/python-3.12.11-he8d2d4c_0.conda
+  sha256: 7e89145777028ffdeffbdee799fe7c802e950d8803ef1900f32b257c7ca4e78f
+  md5: 9783e45825df3d441392b7fa66759899
+  depends:
+  - bzip2 >=1.0.8,<2.0a0
+  - expat >=2.7.1,<3.0a0
+  - libffi >=3.4,<4.0a0
+  - ncurses >=6.4,<7.0a0
+  - openssl >=3.0.16,<4.0a0
+  - readline >=8.2,<9.0a0
+  - sqlite >=3.45.3,<4.0a0
+  - tk >=8.6.14,<8.7.0a0
+  - tzdata
+  - xz >=5.6.4,<6.0a0
+  - zlib >=1.2.13,<1.3.0a0
+  constrains:
+  - python_abi 3.12.* *_cp312
+  license: PSF-2.0
+  license_family: PSF
+  size: 14694320
+  timestamp: 1749129956050
 - conda: https://repo.anaconda.com/pkgs/main/win-64/python-3.12.11-h716150d_0.conda
   sha256: 0c6525f867e14fa42211559ac3efd171b250e70ac8cde8dab6db97bd9a102b1c
   md5: 759488003d0ceddbcf33e861d3bd4643
@@ -447,6 +604,11 @@ packages:
   version: 6.0.2
   sha256: 7e7401d0de89a9a855c839bc697c079a4af81cf878373abd7dc625847d25cbd8
   requires_python: '>=3.8'
+- pypi: https://files.pythonhosted.org/packages/86/0c/c581167fc46d6d6d7ddcfb8c843a4de25bdd27e4466938109ca68492292c/PyYAML-6.0.2-cp312-cp312-macosx_10_9_x86_64.whl
+  name: pyyaml
+  version: 6.0.2
+  sha256: c70c95198c015b85feafc136515252a261a84561b7b1d51e3384e0655ddf25ab
+  requires_python: '>=3.8'
 - pypi: https://files.pythonhosted.org/packages/b9/2b/614b4752f2e127db5cc206abc23a8c19678e92b23c3db30fc86ab731d3bd/PyYAML-6.0.2-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl
   name: pyyaml
   version: 6.0.2
@@ -462,6 +624,15 @@ packages:
   license_family: GPL
   size: 365188
   timestamp: 1666648052561
+- conda: https://repo.anaconda.com/pkgs/main/osx-64/readline-8.2-hca72f7f_0.conda
+  sha256: d141d36dc1b8b4484dae738b5cd50bd2c6b85dabd6c606d3a93b7d5b5a4b28b6
+  md5: 971667436260e523f6f7355fdfa238bf
+  depends:
+  - ncurses >=6.3,<7.0a0
+  license: GPL-3.0-only
+  license_family: GPL
+  size: 335698
+  timestamp: 1666648077019
 - pypi: https://files.pythonhosted.org/packages/a3/dc/17031897dae0efacfea57dfd3a82fdd2a2aeb58e0ff71b77b87e44edc772/setuptools-80.9.0-py3-none-any.whl
   name: setuptools
   version: 80.9.0
@@ -529,6 +700,11 @@ packages:
   version: 6.9.1
   sha256: efcdfa8655d34aaf8d7a0c7724def3440bd46db02f5ad3b1785db5f6ccb0a8ff
   requires_python: '>=3.9,<3.14'
+- pypi: https://files.pythonhosted.org/packages/98/98/34d4d25b79055959b171420d47fcc10121aefcbb261c91d5491252830e31/shiboken6-6.9.1-cp39-abi3-macosx_12_0_universal2.whl
+  name: shiboken6
+  version: 6.9.1
+  sha256: 40e92afc88da06b5100c56b761e59837ff282166e9531268f3d910b6128e621e
+  requires_python: '>=3.9,<3.14'
 - conda: https://repo.anaconda.com/pkgs/main/linux-64/sqlite-3.50.2-hb25bd0a_1.conda
   sha256: 6d4069cc8f61eeacea7e018ceb27f23c44b40836da9e74965be91e3bc422ac98
   md5: 6ac08aa6b5f14911039aa04b2b2c3350
@@ -543,6 +719,19 @@ packages:
   license_family: Other
   size: 1151016
   timestamp: 1752773631879
+- conda: https://repo.anaconda.com/pkgs/main/osx-64/sqlite-3.50.2-hc8b0dd6_1.conda
+  sha256: fe376ff914ca3eb10ed1a8f2be3e83486fd4636d42b4188d66e3685b52bb007c
+  md5: c1036f04e8d13c68a27fe9da140e34f3
+  depends:
+  - __osx >=10.15
+  - ncurses >=6.4,<7.0a0
+  - readline >=8.0,<9.0a0
+  - zlib >=1.2.13,<1.3.0a0
+  - zlib >=1.2.13,<2.0a0
+  license: blessing
+  license_family: Other
+  size: 1145428
+  timestamp: 1752773664751
 - conda: https://repo.anaconda.com/pkgs/main/win-64/sqlite-3.50.2-hda9a48d_1.conda
   sha256: cc0f45b4cf796187b4119ec6ec629984a84939ac096100496b9d72a5be20af85
   md5: 9796bc1868a29e4ec53a054cc84870ba
@@ -565,6 +754,15 @@ packages:
   license_family: BSD
   size: 3591038
   timestamp: 1748849507196
+- conda: https://repo.anaconda.com/pkgs/main/osx-64/tk-8.6.14-h0a12a5f_1.conda
+  sha256: a5f3d26830cebf29438f15a658f1e955c9f3553bf1638ccd23caffb84a6880c0
+  md5: b5c23bac899d2e153b438a2b638c2c9b
+  depends:
+  - zlib >=1.2.13,<1.3.0a0
+  license: TCL
+  license_family: BSD
+  size: 3544424
+  timestamp: 1748849556131
 - conda: https://repo.anaconda.com/pkgs/main/win-64/tk-8.6.14-h5e9d12e_1.conda
   sha256: 78bd408b1ac04f852204a027334c495a01ff03b0a7c5d6a2f3804c6a8dbb9c12
   md5: f788fb9c9b3e33945ba62282d18c75bb
@@ -700,6 +898,13 @@ packages:
   license_family: GPL2
   size: 580311
   timestamp: 1739468299256
+- conda: https://repo.anaconda.com/pkgs/main/osx-64/xz-5.6.4-h46256e1_1.conda
+  sha256: 08852a40efe5d1aaec895e75667d109f712936f70892dd3372581b9eba591002
+  md5: ce989a528575ad332a650bb7c7f7e5d5
+  license: LGPL-2.1-or-later and GPL-2.0-or-later and 0BSD
+  license_family: GPL2
+  size: 296228
+  timestamp: 1739468347605
 - conda: https://repo.anaconda.com/pkgs/main/win-64/xz-5.6.4-h4754444_1.conda
   sha256: 767a18adef86909bb374379add4784879d950a49ce2f7502444fd177b43fae33
   md5: 6036999a3a2c7a3e3739d6b9351fcb0b
@@ -719,6 +924,13 @@ packages:
   license_family: Other
   size: 113492
   timestamp: 1714510716441
+- conda: https://repo.anaconda.com/pkgs/main/osx-64/zlib-1.2.13-h4b97444_1.conda
+  sha256: 37a384d85f059a46a138e99e0315a7b91925421cdcbffae8ef4b2ad9de985c01
+  md5: 38e35f7c817fac0973034bfce6706ec2
+  license: Zlib
+  license_family: Other
+  size: 103951
+  timestamp: 1714511811597
 - conda: https://repo.anaconda.com/pkgs/main/win-64/zlib-1.2.13-h8cc25b3_1.conda
   sha256: 48eef468ca392090e6fe57c3ba54e3a7dc1412f9c417c248575d0717e9a5ed3d
   md5: 1f7ea85632611b25599e4cddf5b51d7d
